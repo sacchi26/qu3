@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country dec</title>
+</head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+}
+
+button, select {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #82d160;
+    color: black;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover, select:hover {
+    background-color: #74cd5e;
+}
+
+.country-card {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+</style>
+<body>
+    <button id="fetchButton">Fetch Countries</button>
+    <select id="sortSelect">
+        <option value="desc">Sort by Population (Descending)</option>
+        <option value="asc">Sort by Population (Ascending)</option>
+    </select>
+    <div id="countryList"></div>
+</body>
+<script>
+const fetchCountries = async () => {
+    try {
+        let response = await fetch('https://dbioz2ek0e.execute-api.ap-south-1.amazonaws.com/mockapi/get-countries');
+        let data = await response.json();
+        displayCountries(data);
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+    }
+};
+
+
+let displayCountries = (countries) => {
+    let countryList = document.getElementById('countryList');
+    countryList.innerHTML = ''; 
+
+    countries.forEach(country => {
+        let countryCard = document.createElement('div');
+        countryCard.classList.add('country-card');
+
+        let name = document.createElement('p');
+        name.textContent = `Name: ${country.name}`;
+
+        let capital = document.createElement('p');
+        capital.textContent = `Capital: ${country.capital}`;
+
+        let population = document.createElement('p');
+        population.textContent = `Population: ${country.population}`;
+
+        countryCard.appendChild(name);
+        countryCard.appendChild(capital);
+        countryCard.appendChild(population);
+
+        countryList.appendChild(countryCard);
+    });
+};
+let sortCountries = (order) => {
+    let sortParam = `?sort=population&order=${order}`;
+    fetchCountries(sortParam);
+};
+document.getElementById('fetchButton').addEventListener('click', fetchCountries);
+
+
+document.getElementById('sortSelect').addEventListener('change', (event) => {
+    let order = event.target.value;
+    sortCountries(order);
+});
+
+</script>
+</html>
